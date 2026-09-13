@@ -87,7 +87,7 @@ for ext_raw in EXTENSIONS:
 
 assert files, "No files in allowed formats found"
 
-print("Getting file durations")
+print("Getting file durations...")
 durations_sec = {f: get_duration(f) for f in files}
 totaltime_sec = sum(durations_sec.values())
 
@@ -109,7 +109,7 @@ assert min(durations_sec.values()
 remaining_files = files.copy()
 
 # Fill each side of the tape to max
-print("Finding maximum side packing")
+print("Finding maximum side packing...")
 sides = {"A": [], "B": []}
 for side_name in sides:
     # Count down from max size to min
@@ -145,12 +145,13 @@ if remaining_files:
 else:
     print("All files fit on tape.")
 
-print("Generating side folders")
 for side_name, side in sides.items():
     # Should only happen when the second side is empty
     if not side:
-        print("No files for side", side_name, "so not copying")
+        print("No files for side", side_name, "so not copying.")
         continue
+
+    print(f"Generating folder for side {side_name}...")
 
     # Folder for this side
     folder = op.join(args.output_folder, side_name)
