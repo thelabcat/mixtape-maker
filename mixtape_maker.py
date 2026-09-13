@@ -1,4 +1,4 @@
-#!/ usr / bin / env python3
+#!/usr/bin/env python3
 #coding : utf - 8
 """Mixtape Maker
 
@@ -36,7 +36,8 @@ parser = argparse.ArgumentParser(
 Find the optimal combination of tracks to fit on your mixtape.
 Designed for use with the CR-669 Portable Cassette Player and Recorder AKA
 Phillips TAR5109.""",
-    epilog="S.D.G."
+    epilog="S.D.G.",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 
 parser.add_argument("-t", "--tape-size", type=int, default=60,
@@ -56,8 +57,8 @@ DURATION_COMMAND = "ffprobe -v error -show_entries format=duration" +\
     "-of default=noprint_wrappers=1:nokey=1".split()
 """Command to run to get the duration of a media file, suffixed by the path"""
 
-EXTENSIONS = "mp3", "wma"
-"""Filename extensions supported by that cassette player"""
+EXTENSIONS = "mp3", "wma", "wav"
+"""Filename extensions supported by that cassette recorder"""
 
 TAPE_SIDE_SECONDS: int = args.tape_size * 30
 """Size of one tape side in seconds"""
