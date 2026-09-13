@@ -46,7 +46,7 @@ parser.add_argument("-g", "--gap", type=int, default=3,
                     help="Gap (in seconds) between tracks")
 parser.add_argument("-e", "--end-margin", type=int, default=5 * 60,
                     help="Margin of silence (in seconds) at the end to prevent looping")
-parser.add_argument("input_folder", nargs="?", default=".",
+parser.add_argument("input_folder", nargs="?", default="music",
                     help="What folder to search for track options")
 parser.add_argument("output_folder", nargs="?", default=".",
                     help="Where to place the generated A and B folders")
@@ -87,6 +87,7 @@ for ext_raw in EXTENSIONS:
 
 assert files, "No files in allowed formats found"
 
+print("Getting file durations")
 durations_sec = {f: get_duration(f) for f in files}
 totaltime_sec = sum(durations_sec.values())
 
@@ -108,6 +109,7 @@ assert min(durations_sec.values()
 remaining_files = files.copy()
 
 # Fill each side of the tape to max
+print("Finding maximum side packing")
 sides = {"A": [], "B": []}
 for side_name in sides:
     # Count down from max size to min
@@ -130,7 +132,7 @@ for side_name in sides:
             # While we're iterating through the side to remove the files we used,
             # we might as well do the telling the user what's on there
             print(
-                f"Side {side_name}, duration {get_list_duration(combo):.02f} seconds:")
+                f"Side {side_name}, duration {get_list_duration(combo):.02f} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
             for f in combo:
                 print("\t", f)
                 remaining_files.remove(f)
@@ -143,6 +145,7 @@ if remaining_files:
 else:
     print("All files fit on tape.")
 
+print("Generating side folders")
 for side_name, side in sides.items():
     # Should only happen when the second side is empty
     if not side:
