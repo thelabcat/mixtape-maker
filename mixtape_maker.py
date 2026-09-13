@@ -53,8 +53,7 @@ parser.add_argument("output_folder", nargs="?", default=".",
 
 args = parser.parse_args()
 
-DURATION_COMMAND = "ffprobe -v error -show_entries format=duration" +\
-    "-of default=noprint_wrappers=1:nokey=1".split()
+DURATION_COMMAND = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1".split()
 """Command to run to get the duration of a media file, suffixed by the path"""
 
 EXTENSIONS = "mp3", "wma", "wav"
