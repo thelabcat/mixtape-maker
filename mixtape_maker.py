@@ -154,7 +154,7 @@ for side_name, side in sides.items():
 
     # Folder for this side
     folder = op.join(args.output_folder, side_name)
-    os.makedirs(folder, exist_ok=True)
+    os.makedirs(folder, exist_ok=False)
 
     # Number of tracks on this side
     track_count = len(side)
