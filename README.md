@@ -3,24 +3,26 @@
 
 *Designed for use with the CR-669 Portable Cassette Player and Recorder AKA Phillips TAR5109*
 
-## Quickstart (absolutely no config)
-1. Select a 60-minute recordable audio tape cassette (30 minutes on each side) to be your mixtape.
-2. Put your music files in a folder named `music` in the same folder as this script (must be mp3, wma, or wav).
-3. Run the script.
-4. Copy the generated `A` folder (in the same folder as the script) onto an otherwise empty USB flash memory drive or micro SD card (must be 32 GB capacity ***or less***).
-5. Make sure the "Trash" or "Recycle bin" on the drive or card is empty.
-6. Safely eject the drive or card, and plug it into the cassette recorder.
-7. Switch the cassette recorder into USB/Micro SD mode. After a few seconds, it will start playing the first track.
-8. Skip to the second file (a silence gap 3 seconds long), and ***immediately pause the digital player***.
-9. Manually wind forward the takeup reel of the cassette, until the splice from transparent leader tape to magnetic tape is only just at the openings in the bottom of the cassette. The goal here is that the cassette recorder's erase head will still touch all of the magnetic tape, but recording will start immediately.
-10. Insert the cassette into the recorder.
-11. Toggle on the pause key of the cassette mechanism, then press down the record and play key. This will allow the motor system and other circuitry of the cassette recorder to start and get up to full operating speed, without actually starting recording.
-12. Showtime! Unpause the cassette mechanism, wait a second or so for magnetic tape to reach the play/record head, then skip back one track on the digital player. Having been skipped back, it will start playing again from the very beginning of the first track. You may hear a skip of the first second or so of track audio, but this skip occurs only to the speaker output, and thankfully not to the tape recording system.
-13. Wait for recording to finish. If your machine is a CR-669 AKA Phillips TAR5109, feel free to turn the volume down to silent, as the recording volume from the digital player bypasses the output ampplifier and its volume control. The cassette recorder will audibly click off when it reaches the end of the tape.
-14. Remove the memory drive from the cassette recorder, and plug it back into the computer.
-15. ***Permanently delete*** the `A` folder from the memory drive.
-16. If the script also generated a `B` folder, repeat steps 4 through 13 with that folder and the other side of the cassette.
-17. **DO NOT ENJOY.** It is not allowed (jk).
+## Quickstart (minimal config, using all defaults)
+1. Have Python 3 and FFmpeg installed. This program was officially written in 3.14.7.
+2. Have [PyDub](https://pypi.org/project/pydub/) installed to that Python.
+3. Select a 60-minute recordable audio tape cassette (30 minutes on each side) to be your mixtape.
+4. Put your music files in a folder named `music` in the same folder as this script (must be mp3, wma, or wav).
+5. Run the script.
+6. Copy the generated `A` folder (in the same folder as the script) onto an otherwise empty USB flash memory drive or micro SD card (must be 32 GB capacity ***or less***).
+7. Make sure the "Trash" or "Recycle bin" on the drive or card is empty.
+8. Safely eject the drive or card, and plug it into the cassette recorder.
+9. Switch the cassette recorder into USB/Micro SD mode. After a few seconds, it will start playing the first track.
+10. Skip to the second file (a silence gap 3 seconds long), and ***immediately pause the digital player***.
+11. Manually wind forward the takeup reel of the cassette, until the splice from transparent leader tape to magnetic tape is only just at the openings in the bottom of the cassette. The goal here is that the cassette recorder's erase head will still touch all of the magnetic tape, but recording will start immediately.
+12. Insert the cassette into the recorder.
+13. Toggle on the pause key of the cassette mechanism, then press down the record and play key. This will allow the motor system and other circuitry of the cassette recorder to start and get up to full operating speed, without actually starting recording.
+14. Showtime! Unpause the cassette mechanism, wait a second or so for magnetic tape to reach the play/record head, then skip back one track on the digital player. Having been skipped back, it will start playing again from the very beginning of the first track. You may hear a skip of the first second or so of track audio, but this skip occurs only to the speaker output, and thankfully not to the tape recording system.
+15. Wait for recording to finish. If your machine is a CR-669 AKA Phillips TAR5109, feel free to turn the volume down to silent, as the recording volume from the digital player bypasses the output ampplifier and its volume control. The cassette recorder will audibly click off when it reaches the end of the tape.
+16. Remove the memory drive from the cassette recorder, and plug it back into the computer.
+17. ***Permanently delete*** the `A` folder from the memory drive.
+18. If the script also generated a `B` folder, repeat steps 6 through 15 with that folder and the other side of the cassette.
+19. **DO NOT ENJOY.** It is not allowed (jk).
 
 ## More detailed options
 this program supports some configuration options. Most importantly, you can set a different tape size than the default 60 minutes. It's all UNIX style CLI options, so here's the full CLI `--help`:
