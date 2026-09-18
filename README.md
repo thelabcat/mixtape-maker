@@ -42,10 +42,12 @@ options:
   -g, --gap GAP         Gap (in seconds) between tracks (default: 3)
   -e, --end-margin END_MARGIN
                         Margin of silence (in seconds) at the end to prevent looping (default: 300)
+  -u, --unlock-formats  Allow ANY file with an audio stream, not just CR-669 supported ones (default: False)
 
 S.D.G.
 ```
-That `--end-margin` option is because of two things. First, most recordable tapes have a minute or two extra of space. I can guess why, but it doesn't matter. Second, the CR-669 AKA Phillips TAR5109's digital player will loop around to the first track after completing the last one. So, I add 5 minutes of silence to cover any such margin, to prevent the first half of a track from being recorded on the very end of the tape.
+The silent `### blank loopstop.mp3` at the end of the generated mix, of a duration which the `--end-margin` option adjusts in part, is there because of two things. First, the CR-669 AKA Phillips TAR5109's digital player will loop around to the first track after completing the last one. This file will pad out the rest of the tape. Second, most recordable tapes have a minute or two extra of time. I can guess why, but it doesn't matter. This file will thus have an additional margin of silence to cover any such margin of extra tape, to prevent the first half of a track from being recorded on the very end of the tape. That margin is what this option adjusts. I figured 5 minutes was a good default, as even on slow decks that should probably be enough to cover any extra tape space, and end the tape recording before the digital player loops.
+The `--unlock-formats` option is mainly for if you wanted to use this script with a different tape deck, perhaps hooked to your computer as the audio source. You would play the files with any software that supports playing multiple files in filename sorted order (such as VLC Media Player). It will accept anything that FFmpeg can find an audio stream in, including videos, and as far as I know will also check the longest audio stream, not the first one. Use with caution.
 
 ## The law of the land
 Copyright 2026 Wilbur Jaywright
