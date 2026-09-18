@@ -46,6 +46,8 @@ parser.add_argument("-g", "--gap", type=int, default=3,
                     help="Gap (in seconds) between tracks")
 parser.add_argument("-e", "--end-margin", type=int, default=5 * 60,
                     help="Margin of silence (in seconds) at the end to prevent looping")
+parser.add_argument("-u", "--unlock-formats", action="store_true",
+                    help="Allow ANY file with an audio stream, not just CR-669 supported ones")
 parser.add_argument("input_folder", nargs="?", default="music",
                     help="What folder to search for track options")
 parser.add_argument("output_folder", nargs="?", default=".",
@@ -53,7 +55,7 @@ parser.add_argument("output_folder", nargs="?", default=".",
 
 args = parser.parse_args()
 
-DURATION_COMMAND = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1".split()
+DURATION_COMMAND = "ffprobe -v error -select_streams a -show_entries format=duration -of default=noprint_wrappers=1:nokey=1".split()
 """Command to run to get the duration of a media file, suffixed by the path"""
 
 EXTENSIONS = "mp3", "wma", "wav"
@@ -68,27 +70,54 @@ GAP_SEG = AudioSegment.silent(args.gap * 1000)
 assert shutil.which("ffmpeg"), "This program relies on FFmpeg being on PATH"
 
 
-def get_duration(filename: str) -> float:
-    """Determine the duration of a media file via FFmpeg"""
-    return float(subprocess.run(
+def get_duration(filename: str) -> float | None:
+    """Determine the audio duration of a media file via FFmpeg, None if no audio"""
+    result = subprocess.run(
         DURATION_COMMAND + [filename],
         capture_output=True,
-        check=True,
+        check=False,
         encoding="utf-8",
-        ).stdout.strip())
+        ).stdout.strip()
+
+    try:
+        return float(result)
+
+    # The file is not a media file, or has no audio stream
+    except ValueError:
+        return None
 
 
 # Search out files
-files = []
-for ext_raw in EXTENSIONS:
-    for ext in (ext_raw, ext_raw.upper()):
-        files += glob.glob(op.join(args.input_folder,
-                           "**/*." + ext), recursive=True)
+
+# Find any files, filter to audio only later
+if args.unlock_formats:
+    files = glob.glob(op.join(args.input_folder, "**"), recursive=True)
+
+# Limit file search to formats supported by the CR-669
+else:
+    files = []
+    for ext_raw in EXTENSIONS:
+        for ext in (ext_raw, ext_raw.upper()):
+            files += glob.glob(op.join(
+                args.input_folder,
+                "**/*." + ext,
+                ), recursive=True)
 
 assert files, "No files in allowed formats found"
 
 print("Getting file durations...")
 durations_sec = {f: get_duration(f) for f in files}
+
+# Remove files of duration zero or without audio
+for f, d in durations_sec.copy().items():
+    if not d:
+        files.remove(f)
+        del durations_sec[f]
+
+        # Had an audio stream, but of zero duration
+        if d is not None:
+            print("Ignoring", f, "because it's audio stream is empty.")
+
 totaltime_sec = sum(durations_sec.values())
 
 
