@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding : utf - 8
+# coding: utf-8
 """Mixtape Maker
 
 Find the optimal combination of music tracks to fit on your mixtape size.
