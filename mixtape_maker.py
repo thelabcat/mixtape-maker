@@ -22,6 +22,7 @@ limitations under the License.
 S.D.G."""
 
 import argparse
+from datetime import timedelta
 import glob
 import itertools
 import os
@@ -129,7 +130,7 @@ def get_list_duration(filelist: Sequence[str]) -> float:
         args.gap * (len(filelist) - 1)
 
 
-print(f"Found {len(files)} files, {totaltime_sec: .2f} seconds of audio total.")
+print(f"Found {len(files)} files, {str(timedelta(seconds=totaltime_sec))} of audio total.")
 
 assert min(durations_sec.values()
            ) < TAPE_SIDE_SECONDS, "No tracks will fit on tape side"
@@ -161,9 +162,12 @@ for side_name in sides:
             # While we're iterating through the side to remove the files we used,
             # we might as well do the telling the user what's on there
             print(
-                f"Side {side_name}, duration {get_list_duration(combo):.02f} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
+                f"Side {side_name}, duration {str(timedelta(seconds=get_list_duration(combo)))} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
+
+            position = 0
             for f in combo:
-                print("\t", f)
+                print("\t", str(timedelta(seconds=position)), f)
+                position += durations_sec[f] + args.gap
                 remaining_files.remove(f)
             break
 
