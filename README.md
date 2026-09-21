@@ -35,7 +35,7 @@ usage: mixtape_maker.py [-h] [-t TAPE_SIZE] [-g GAP] [-e END_MARGIN] [input_fold
 Find the optimal combination of tracks to fit on your mixtape. Designed for use with the CR-669 Portable Cassette Player and Recorder AKA Phillips TAR5109.
 
 positional arguments:
-  input_folder          What folder to search for track options (default: .)
+  input_folder          What folder to search for track options (default: ./music)
   output_folder         Where to place the generated A and B folders (default: .)
 
 options:

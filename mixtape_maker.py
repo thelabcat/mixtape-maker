@@ -49,7 +49,7 @@ parser.add_argument("-e", "--end-margin", type=int, default=5 * 60,
                     help="Margin of silence (in seconds) at the end to prevent looping")
 parser.add_argument("-u", "--unlock-formats", action="store_true",
                     help="Allow ANY file with an audio stream, not just CR-669 supported ones")
-parser.add_argument("input_folder", nargs="?", default="music",
+parser.add_argument("input_folder", nargs="?", default="./music",
                     help="What folder to search for track options")
 parser.add_argument("output_folder", nargs="?", default=".",
                     help="Where to place the generated A and B folders")
