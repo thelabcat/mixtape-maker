@@ -198,10 +198,12 @@ for side_name, side in sides.items():
 
     # Copy over the tracks, with numbering to put them in order, and gaps in between
     for i, f in enumerate(side):
+        # Tracks are filename numbered 1, 3, 5 and so on
         shutil.copy(f, op.join(folder, f"{i * 2 + 1:0{digits}} {op.basename(f)}"))
 
         # We are not on the last track, so add a gap
         if i + 1 != track_count:
+            # Gaps are filename numbered 2, 4, 6 and so on
             GAP_SEG.export(op.join(folder, f"{i * 2 + 2:0{digits}} blank gap.mp3"))
 
     # Replace the last gap with one long enough to fill the cassette and then some
