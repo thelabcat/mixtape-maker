@@ -198,14 +198,14 @@ for side_name, side in sides.items():
 
     # Copy over the tracks, with numbering to put them in order, and gaps in between
     for i, f in enumerate(side):
-        shutil.copy(f, op.join(folder, f"{i * 2:0{digits}} {op.basename(f)}"))
+        shutil.copy(f, op.join(folder, f"{i * 2 + 1:0{digits}} {op.basename(f)}"))
 
         # We are not on the last track, so add a gap
         if i + 1 != track_count:
-            GAP_SEG.export(op.join(folder, f"{i * 2 + 1:0{digits}} blank gap.mp3"))
+            GAP_SEG.export(op.join(folder, f"{i * 2 + 2:0{digits}} blank gap.mp3"))
 
     # Replace the last gap with one long enough to fill the cassette and then some
     AudioSegment.silent((TAPE_SIDE_SECONDS - get_list_duration(side) + args.end_margin)
-                        * 1000).export(op.join(folder, f"{i * 2 + 1:0{digits}} blank loopstop.mp3"))
+                        * 1000).export(op.join(folder, f"{i * 2 + 2:0{digits}} blank loopstop.mp3"))
 
 print("Done.")
