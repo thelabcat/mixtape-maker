@@ -30,7 +30,7 @@ Versions of software here are just the version I was using, because it was the l
 ## More detailed options
 this program supports some configuration options. Most importantly, you can set a different tape size than the default 60 minutes. It's all UNIX style CLI options, so here's the full CLI `--help`:
 ```
-usage: mixtape_maker.py [-h] [-t TAPE_SIZE] [-g GAP] [-e END_MARGIN] [input_folder] [output_folder]
+usage: mixtape_maker.py [-h] [-t TAPE_SIZE] [-g GAP] [-e END_MARGIN] [-u] [-p] [input_folder] [output_folder]
 
 Find the optimal combination of tracks to fit on your mixtape. Designed for use with the CR-669 Portable Cassette Player and Recorder AKA Phillips TAR5109.
 
@@ -46,6 +46,7 @@ options:
   -e, --end-margin END_MARGIN
                         Margin of silence (in seconds) at the end to prevent looping (default: 300)
   -u, --unlock-formats  Allow ANY file with an audio stream, not just CR-669 supported ones (default: False)
+  -p, --print-only      Only print generated ordering, do not create output folders (default: False)
 
 S.D.G.
 ```
