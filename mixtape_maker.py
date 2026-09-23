@@ -29,6 +29,7 @@ import os
 from os import path as op
 import shutil
 import subprocess
+import sys
 from typing import Sequence
 from pydub import AudioSegment
 
@@ -49,6 +50,8 @@ parser.add_argument("-e", "--end-margin", type=int, default=5 * 60,
                     help="Margin of silence (in seconds) at the end to prevent looping")
 parser.add_argument("-u", "--unlock-formats", action="store_true",
                     help="Allow ANY file with an audio stream, not just CR-669 supported ones")
+parser.add_argument("-p", "--print-only", action="store_true",
+                    help="Only print generated ordering, do not create output folders")
 parser.add_argument("input_folder", nargs="?", default="./music",
                     help="What folder to search for track options")
 parser.add_argument("output_folder", nargs="?", default=".",
@@ -144,15 +147,18 @@ sides = {"A": [], "B": []}
 for side_name in sides:
     # Count down from max size to min
     for filecount in range(len(remaining_files), 0, -1):
-        # Find all the possible combos of X songs, and sort them by length, longest first
-        combos = sorted(itertools.combinations(remaining_files,
-                        filecount), key=get_list_duration, reverse=True)
+        # Find all the possible combos of X songs, and sort them by length, shortest first
+        combos = sorted(itertools.combinations(remaining_files, filecount), key=get_list_duration)
 
-        # Find the longest combo that will fit, or good = False if none do
-        good = False
+        # Find the longest combo that will fit, or good = None if none do
+        good = None
         for combo in combos:
+            # The next shortest combo still fits
             if get_list_duration(combo) <= TAPE_SIDE_SECONDS:
-                good = True
+                good = combo
+
+            # The last combo we checked (if any) is the longest one that fits
+            else:
                 break
 
         # One combo was short enough
@@ -177,6 +183,10 @@ if remaining_files:
         print("\t", f)
 else:
     print("All files fit on tape.")
+
+if args.print_only:
+    print("Flagged to only print list, no folder generation.")
+    sys.exit(0)
 
 for side_name, side in sides.items():
     # Should only happen when the second side is empty
