@@ -7,8 +7,8 @@
 
 Versions of software here are just the version I was using, because it was the latest at the time. Default to the latest, unless something I wrote isn't forward compatible.
 
-1. Have [Python](https://www.python.org/downloads/) and [FFmpeg](https://www.ffmpeg.org/download.html) installed. I used Python 3.14.7 and FFmpeg  n9.0.1.
-2. Have [PyDub](https://pypi.org/project/pydub/) and [PyAV](https://pypi.org/project/av/) installed to that Python. I used 0.25.1.
+1. Have [Python](https://www.python.org/downloads/) installed. I used Python 3.14.7.
+2. Have [PyDub](https://pypi.org/project/pydub/) and [PyAV](https://pypi.org/project/av/) installed to that Python. I used PyDub 0.25.1 and PyAV 18.1.0.
 3. Select a 60-minute recordable audio tape cassette (30 minutes on each side) to be your mixtape.
 4. Put your music files in a folder named `music` in the same folder as this script (must be mp3, wma, or wav).
 5. Run the script.
