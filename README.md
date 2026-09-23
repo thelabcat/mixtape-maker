@@ -8,7 +8,7 @@
 Versions of software here are just the version I was using, because it was the latest at the time. Default to the latest, unless something I wrote isn't forward compatible.
 
 1. Have [Python](https://www.python.org/downloads/) and [FFmpeg](https://www.ffmpeg.org/download.html) installed. I used Python 3.14.7 and FFmpeg  n9.0.1.
-2. Have [PyDub](https://pypi.org/project/pydub/) installed to that Python. I used 0.25.1.
+2. Have [PyDub](https://pypi.org/project/pydub/) and [PyAV](https://pypi.org/project/av/) installed to that Python. I used 0.25.1.
 3. Select a 60-minute recordable audio tape cassette (30 minutes on each side) to be your mixtape.
 4. Put your music files in a folder named `music` in the same folder as this script (must be mp3, wma, or wav).
 5. Run the script.
@@ -51,7 +51,7 @@ options:
 S.D.G.
 ```
 The silent `### blank loopstop.mp3` at the end of the generated mix, of a duration which the `--end-margin` option adjusts in part, is there because of two things. First, the CR-669 AKA Phillips TAR5109's digital player will loop around to the first track after completing the last one. This file will pad out the rest of the tape. Second, most recordable tapes have a minute or two extra of time. I can guess why, but it doesn't matter. This file will thus have an additional margin of silence to cover any such margin of extra tape, to prevent the first half of a track from being recorded on the very end of the tape. That margin is what this option adjusts. I figured 5 minutes was a good default, as even on slow decks that should probably be enough to cover any extra tape space, and end the tape recording before the digital player loops.
-The `--unlock-formats` option is mainly for if you wanted to use this script with a different tape deck, perhaps hooked to your computer as the audio source. You would play the files with any software that supports playing multiple files in filename sorted order (such as VLC Media Player). It will accept anything that FFmpeg can find an audio stream in, including videos, and as far as I know will also check the longest audio stream, not the first one. Use with caution.
+The `--unlock-formats` option is mainly for if you wanted to use this script with a different tape deck, perhaps hooked to your computer as the audio source. You would play the files with any software that supports playing multiple files in filename sorted order (such as VLC Media Player). It will accept anything that FFmpeg can find an audio stream in, including videos, going by the first audio stream it finds in the file. Use with caution.
 
 ## The law of the land
 Copyright 2026 Wilbur Jaywright

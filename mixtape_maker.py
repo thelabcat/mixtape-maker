@@ -29,9 +29,9 @@ import itertools
 import os
 from os import path as op
 import shutil
-import subprocess
 import sys
 from typing import Sequence
+import av
 from pydub import AudioSegment
 
 parser = argparse.ArgumentParser(
@@ -60,9 +60,6 @@ parser.add_argument("output_folder", nargs="?", default=".",
 
 args = parser.parse_args()
 
-DURATION_COMMAND = "ffprobe -v error -select_streams a -show_entries format=duration -of default=noprint_wrappers=1:nokey=1".split()
-"""Command to run to get the duration of a media file, suffixed by the path"""
-
 EXTENSIONS = "mp3", "wma", "wav"
 """Filename extensions supported by that cassette recorder"""
 
@@ -77,19 +74,11 @@ assert shutil.which("ffmpeg"), "This program relies on FFmpeg being on PATH"
 
 def get_duration(filename: str) -> float | None:
     """Determine the audio duration of a media file via FFmpeg, None if no audio"""
-    result = subprocess.run(
-        DURATION_COMMAND + [filename],
-        capture_output=True,
-        check=False,
-        encoding="utf-8",
-        ).stdout.strip()
-
-    try:
-        return float(result)
-
-    # The file is not a media file, or has no audio stream
-    except ValueError:
-        return None
+    with av.open(filename) as container:
+        audio_streams = [s for s in container.streams if s.type == "audio"]
+        if not audio_streams:
+            return None
+        return float(audio_streams[0].duration * audio_streams[0].time_base)
 
 
 # Search out files
