@@ -22,6 +22,7 @@ limitations under the License.
 S.D.G."""
 
 import argparse
+from bisect import bisect
 from datetime import timedelta
 import glob
 import itertools
@@ -150,32 +151,28 @@ for side_name in sides:
         # Find all the possible combos of X songs, and sort them by length, shortest first
         combos = sorted(itertools.combinations(remaining_files, filecount), key=get_list_duration)
 
-        # Find the longest combo that will fit, or good = None if none do
-        good = None
-        for combo in combos:
-            # The next shortest combo still fits
-            if get_list_duration(combo) <= TAPE_SIDE_SECONDS:
-                good = combo
+        # None of these combos will work, skip this file count
+        if get_list_duration(combos[0]) > TAPE_SIDE_SECONDS:
+            continue
 
-            # The last combo we checked (if any) is the longest one that fits
-            else:
-                break
+        # At least one combo is short enough, find the longest working one.
+        # This subtraction should be safe, because the only way the bisect result
+        # could equal 0 is if the bottom of the list were longer than TAPE_SIDE_SECONDS,
+        # which we check for above.
+        combo = combos[bisect(combos, TAPE_SIDE_SECONDS, key=get_list_duration) - 1]
+        sides[side_name] = combo
 
-        # One combo was short enough
-        if good:
-            sides[side_name] = combo
+        # While we're iterating through the side to remove the files we used,
+        # we might as well do the telling the user what's on there
+        print(
+            f"Side {side_name}, duration {str(timedelta(seconds=get_list_duration(combo)))} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
 
-            # While we're iterating through the side to remove the files we used,
-            # we might as well do the telling the user what's on there
-            print(
-                f"Side {side_name}, duration {str(timedelta(seconds=get_list_duration(combo)))} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
-
-            position = 0
-            for f in combo:
-                print("\t", str(timedelta(seconds=position)), f)
-                position += durations_sec[f] + args.gap
-                remaining_files.remove(f)
-            break
+        position = 0
+        for f in combo:
+            print("\t", str(timedelta(seconds=position)), f)
+            position += durations_sec[f] + args.gap
+            remaining_files.remove(f)
+        break
 
 if remaining_files:
     print("Some files could not fit:")
