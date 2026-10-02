@@ -46,12 +46,17 @@ options:
   -e, --end-margin END_MARGIN
                         Margin of silence (in seconds) at the end to prevent looping (default: 300)
   -u, --unlock-formats  Allow ANY file with an audio stream, not just CR-669 supported ones (default: False)
+  )
+  -m, --max-power       Search through all combinations at once for best fit, rather than N-tracks sets at a time. Heavier, but may achieve closer to full tape use. (default: False)
   -p, --print-only      Only print generated ordering, do not create output folders (default: False)
 
 S.D.G.
 ```
 The silent `### blank loopstop.mp3` at the end of the generated mix, of a duration which the `--end-margin` option adjusts in part, is there because of two things. First, the CR-669 AKA Phillips TAR5109's digital player will loop around to the first track after completing the last one. This file will pad out the rest of the tape. Second, most recordable tapes have a minute or two extra of time. I can guess why, but it doesn't matter. This file will thus have an additional margin of silence to cover any such margin of extra tape, to prevent the first half of a track from being recorded on the very end of the tape. That margin is what this option adjusts. I figured 5 minutes was a good default, as even on slow decks that should probably be enough to cover any extra tape space, and end the tape recording before the digital player loops.
 The `--unlock-formats` option is mainly for if you wanted to use this script with a different tape deck, perhaps hooked to your computer as the audio source. You would play the files with any software that supports playing multiple files in filename sorted order (such as VLC Media Player). It will accept anything that FFmpeg can find an audio stream in, including videos, going by the first audio stream it finds in the file. Use with caution.
+The `--max-power` option overcomes a weakness in the default search algorithm, at the cost of system resources. The default is to try all tracks, then combinations of all but one, then combinations of all but two, et cetera. If a combination of all but six works, all but seven will never be tried, even though a larger number of smaller tracks might fit the tape better. The "max power" version is to generate _all_ possible combinations _at once_, and find the absolute best fitting one. In my trial of just under an hour of 21 tracks, regular search got 29:59.934498 on side A with 0.656 seconds of total program run time, whereas "max power" search got 29:59.999914 on side A, a gap to exactly 30 minutes approximately 761 times smaller, at the cost of taking about 3.7 times as long with 2.437 seconds of total program run time. I didn't bother subtracting the file glob for this test, but I did disable the file copying. That "761 times" sounds really impressive, until you realize that this number is entirely related to my track list, and that the improvement was less than a tenth of a second. Still, I didn't know that until I built the feature, so you can have it. :-)
+
+Enjoy (yes, I was kidding earlier)!
 
 ## The law of the land
 Copyright 2026 Wilbur Jaywright

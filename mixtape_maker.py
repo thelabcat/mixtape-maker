@@ -51,6 +51,8 @@ parser.add_argument("-e", "--end-margin", type=int, default=5 * 60,
                     help="Margin of silence (in seconds) at the end to prevent looping")
 parser.add_argument("-u", "--unlock-formats", action="store_true",
                     help="Allow ANY file with an audio stream, not just CR-669 supported ones")
+parser.add_argument("-m", "--max-power", action="store_true",
+                    help="Search through all combinations at once for best fit, rather than N-tracks sets at a time. Heavier, but may achieve closer to full tape use.")
 parser.add_argument("-p", "--print-only", action="store_true",
                     help="Only print generated ordering, do not create output folders")
 parser.add_argument("input_folder", nargs="?", default="./music",
@@ -134,34 +136,53 @@ remaining_files = files.copy()
 # Fill each side of the tape to max
 print("Finding maximum side packing...")
 sides = {"A": [], "B": []}
+
+if args.max_power:
+    print("Max search power enabled, finding all combination durations at once per side...")
+
 for side_name in sides:
-    # Count down from max size to min
-    for filecount in range(len(remaining_files), 0, -1):
-        # Find all the possible combos of X songs, and sort them by length, shortest first
-        combos = sorted(itertools.combinations(remaining_files, filecount), key=get_list_duration)
+    if args.max_power:
+        # List of all combos must be ordered for bisect search to work
+        combos = sorted(
+            # Chain the track count lists into one
+            itertools.chain(
+                # Find all combinations for all track counts
+                *[itertools.combinations(remaining_files, filecount)
+                    for filecount in range(len(remaining_files), 0, -1)]
+                ),
+            key=get_list_duration)
 
-        # None of these combos will work, skip this file count
-        if get_list_duration(combos[0]) > TAPE_SIDE_SECONDS:
-            continue
+        # Search the global combo list once, and that's our track list
+        sides[side_name] = combos[bisect(combos, TAPE_SIDE_SECONDS, key=get_list_duration) - 1]
 
-        # At least one combo is short enough, find the longest working one.
-        # This subtraction should be safe, because the only way the bisect result
-        # could equal 0 is if the bottom of the list were longer than TAPE_SIDE_SECONDS,
-        # which we check for above.
-        combo = combos[bisect(combos, TAPE_SIDE_SECONDS, key=get_list_duration) - 1]
-        sides[side_name] = combo
+    else:
+        # Count down from max size to min
+        for filecount in range(len(remaining_files), 0, -1):
+            # Find all the possible combos of X songs, and sort them by length, shortest first
+            combos = sorted(itertools.combinations(remaining_files, filecount), key=get_list_duration)
 
-        # While we're iterating through the side to remove the files we used,
-        # we might as well do the telling the user what's on there
-        print(
-            f"Side {side_name}, duration {str(timedelta(seconds=get_list_duration(combo)))} seconds, {get_list_duration(combo) / TAPE_SIDE_SECONDS * 100:.2f}% full:")
+            # None of these combos will work, skip this file count
+            if get_list_duration(combos[0]) > TAPE_SIDE_SECONDS:
+                continue
 
-        position = 0
-        for f in combo:
-            print("\t", str(timedelta(seconds=position)), f)
-            position += durations_sec[f] + args.gap
-            remaining_files.remove(f)
-        break
+            # At least one combo is short enough, find the longest working one.
+            # This subtraction should be safe, because the only way the bisect result
+            # could equal 0 is if the bottom of the list were longer than TAPE_SIDE_SECONDS,
+            # which we check for above.
+            sides[side_name] = combos[bisect(combos, TAPE_SIDE_SECONDS, key=get_list_duration) - 1]
+            break
+
+    # While we're iterating through the side to remove the files we used,
+    # we might as well do the telling the user what's on there
+    dur = get_list_duration(sides[side_name])
+    print(
+        f"Side {side_name}, duration {str(timedelta(seconds=dur))} seconds, {dur / TAPE_SIDE_SECONDS * 100:.2f}% full:")
+
+    position = 0  # Time progress in the tape, to show position of each track relative to stape start
+    for f in sides[side_name]:
+        print("\t", str(timedelta(seconds=position)), f)
+        position += durations_sec[f] + args.gap
+        remaining_files.remove(f)  # Do not use the files from one side on the other
 
 if remaining_files:
     print("Some files could not fit:")
